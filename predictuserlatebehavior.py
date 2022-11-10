@@ -10,9 +10,9 @@ def onehotmodel(data):
     # 找出数字列
     num_col = data.select_dtypes(include=[np.number])
     non_num_col = data.select_dtypes(exclude=[np.number])
-    # one hot编码
+    # onehot编码
     onehotnum = pd.get_dummies(non_num_col)
-    # one hot编码后数据并合并
+    # 将onehot编码后数据并合并
     data = pd.concat([num_col, onehotnum], axis=1)
     return data
 
@@ -59,7 +59,7 @@ XGB = XGBClassifier(nthread=-1, learning_rate=0.3, max_depth=5, gamma=0,  subsam
 score = cross_val_score(XGB, train_data, train_data_target, cv=5).mean()
 print("训练集上5折交叉验证分数:", score)
 
-# 通过上面构造好的模型,对训练数据集进行评估
+# 通过上面构造的模型,对训练数据集进行评估
 model = XGB.fit(x_train, y_train)
 y_pred = model.predict(x_test)
 print("数据的准确率: ", accuracy_score(y_test, y_pred))
