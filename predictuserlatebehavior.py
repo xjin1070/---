@@ -52,10 +52,6 @@ XGB = XGBClassifier(nthread=-1, learning_rate=0.3, max_depth=5, gamma=0,  subsam
 # subsample:每棵树随机采样的比例
 # colsample_bytree:每棵树随机采样的列数的占比
 
-
-score = cross_val_score(XGB, train_data, train_data_target, cv=5).mean()
-print("训练集上5折交叉验证分数:", score)
-
 # 模型评价
 model = XGB.fit(x_train, y_train)
 y_pred = model.predict(x_test)
