@@ -5,14 +5,11 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from xgboost import XGBClassifier
 
 
-# onehot编码模型,返回编码后的数据
+# onehot编码模型
 def onehotmodel(data):
-    # 找出数字列
     num_col = data.select_dtypes(include=[np.number])
     non_num_col = data.select_dtypes(exclude=[np.number])
-    # onehot编码
     onehotnum = pd.get_dummies(non_num_col)
-    # 将onehot编码后数据并合并
     data = pd.concat([num_col, onehotnum], axis=1)
     return data
 
@@ -30,16 +27,16 @@ dropcols = [
     "CUST_STAD_PLATINUM_FLAG", "CUST_LUXURY_PLATINUM_FLAG", "CUST_PLATINUM_FINANCIAL_FLAG",
     "CUST_DIAMOND_FLAG","CUST_INFINIT_FLAG", "CUST_BUSINESS_FLAG",
 ]
-# 在原基础上，删除没有意义的列
+# 删除没有意义的列
 train_data.drop(dropcols, axis=1, inplace=True)
 test_data.drop(dropcols, axis=1, inplace=True)
 
-# 删除训练集中的重复行
+# 删除train.csv中的重复行
 train_data = train_data.drop_duplicates(keep="first")
-# 去除包含NaN的行
+# 删除NaN行
 train_data.dropna(inplace=True)
 
-# 对train、test的数据进行 Onehot 编码
+# 对train.csv和test.csv数据进行Onehot编码
 train_data = onehotmodel(train_data)
 test_data = onehotmodel(test_data)
 
@@ -59,7 +56,7 @@ XGB = XGBClassifier(nthread=-1, learning_rate=0.3, max_depth=5, gamma=0,  subsam
 score = cross_val_score(XGB, train_data, train_data_target, cv=5).mean()
 print("训练集上5折交叉验证分数:", score)
 
-# 通过上面构造的模型,对训练数据集进行评估
+# 模型评价
 model = XGB.fit(x_train, y_train)
 y_pred = model.predict(x_test)
 print("数据的准确率: ", accuracy_score(y_test, y_pred))
@@ -67,9 +64,7 @@ print("数据的精确率: ", precision_score(y_test, y_pred))
 print("数据的召回率: ", recall_score(y_test, y_pred))
 print("数据的Macro-F1: ", f1_score(y_test, y_pred, average="macro"))
 
-
-
-
+# 提交结果
 test_pred = model.predict(test_data)
 test_pred = pd.DataFrame(test_pred, columns=["bad_good"])
 sub = pd.concat([test_CUST_ID, test_pred], axis=1)
